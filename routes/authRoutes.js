@@ -6,11 +6,14 @@ module.exports = (app) => {
     }));
 
     // Passport will handle the authentication process once directed to this callback url
-    app.get('/auth/google/callback', passport.authenticate('google'));
+    app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => {
+        res.redirect('/surveys');
+    });
 
     app.get('/api/logout', (req, res) => {
         req.logout(); // Logout is attached to passport
-        res.send(req.user); // Return empty user to show not logged in
+        res.redirect('/');
+
     })
 
     app.get('/api/current_user', (req, res) => {
