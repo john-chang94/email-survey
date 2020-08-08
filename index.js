@@ -5,6 +5,7 @@ const cookieSession = require('cookie-session');
 const passport = require('passport');
 const keys = require('./config/keys');
 require('./models/User'); // Placed before passport because passport function looks for a mongoose model inside it
+require('./models/Survey');
 require('./services/passport'); // Shortened because there is no var assigned in this file
 
 mongoose.connect(keys.MONGO_URI);
@@ -22,6 +23,7 @@ app.use(passport.session());
 
 require('./routes/authRoutes')(app);
 require('./routes/billingRoutes')(app);
+require('./routes/surveyRoutes')(app);
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static('client/build'));
