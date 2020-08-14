@@ -8,7 +8,8 @@ require('./models/User'); // Placed before passport because passport function lo
 require('./models/Survey');
 require('./services/passport'); // Shortened because there is no var assigned in this file
 
-mongoose.connect(keys.MONGO_URI);
+mongoose.connect(keys.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+.then(() => console.log('Database connected'));
 
 app.use(express.json());
 app.use(cookieSession({
@@ -35,4 +36,4 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT)
+app.listen(PORT, () => console.log(`Server running on port: ${PORT}`))

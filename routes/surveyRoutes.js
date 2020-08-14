@@ -7,7 +7,11 @@ const surveyTemplate = require('../services/surveyTemplate');
 const Survey = mongoose.model('surveys');
 
 module.exports = app => {
-    app.post('/api/surveys', requireLogin, requireCredits, (req, res) => {
+    app.get('/api/surveys/thanks', (req, res) => {
+        res.send('Thanks for your feedback!');
+    })
+
+    app.post('/api/surveys', requireLogin, requireCredits, async (req, res) => {
         const { title, subject, body, recipients } = req.body;
 
         const survey = new Survey({
@@ -20,6 +24,16 @@ module.exports = app => {
         })
 
         const mailer = new Mailer(survey, surveyTemplate(survey));
-        mailer.send(); // send method from class Mailer that we made
+        try {
+            await mailer.send(); // send method from class Mailer that we made
+            await survey.save(); // Save survey in db
+            req.user.credits -= 1;
+            const user = await req.user.save();
+
+            res.send(user);
+        } catch (err) {
+            res.status(422).send(err); // 422 - error in survey form data
+        }
+
     })
 }
